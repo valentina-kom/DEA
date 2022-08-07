@@ -520,7 +520,7 @@ low_vs_high</code></pre>
 <p>The gap between searches for colleges with low-income graduates vs
 colleges with high income graduates seems pretty small but increases
 slightly during peak times</p>
-<pre class="r"><code>#comparing the means
+<pre class="r"><code>#comparing the means just to get the genetal idea 
 comp_means &lt;- G_summary %&gt;% 
   group_by(hi_low, time) %&gt;% 
   summarize(mean(mean_index))
@@ -555,36 +555,41 @@ summary(time_trends)</code></pre>
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## RMSE: 0.431681   Adj. R2: 0.135782</code></pre>
-<pre class="r"><code>#model 1
-model1 &lt;- feols(mean_index ~ time * hi_low, data = G_summary, vcov = &#39;hetero&#39;)
+<pre class="r"><code># model 1 over time
+model1_time &lt;- feols(mean_index ~ time * hi_low + month, data = G_summary, vcov = &#39;hetero&#39;)
 
 # Adding fixed effects for seasonality
 G_seasonal &lt;- mutate(G_summary, m_o_y = month(month))
-model_seasonal &lt;- feols(mean_index ~ time * hi_low | m_o_y, data = G_seasonal, vcov = &#39;hetero&#39;)
 
-etable(model1, model_seasonal)</code></pre>
-<pre><code>##                              model1      model_seasonal
-## Dependent Var.:          mean_index          mean_index
-##                                                        
-## (Intercept)      0.0226*** (0.0045)                    
-## time1           -0.1084*** (0.0102) -0.2195*** (0.0091)
-## hi_low4            0.0113. (0.0063)    0.0110* (0.0052)
-## time1 x hi_low4   -0.0319* (0.0140)  -0.0316** (0.0121)
-## Fixed-Effects:  ------------------- -------------------
-## m_o_y                            No                 Yes
-## _______________ ___________________ ___________________
-## S.E. type       Heteroskedast.-rob. Heteroskedast.-rob.
-## Observations                 23,378              23,378
-## R2                          0.01282             0.31601
-## Within R2                        --             0.05241
+#
+model_seasonal_time &lt;- feols(mean_index ~ time * hi_low + month| m_o_y, data = G_seasonal, vcov = &#39;hetero&#39;)
+
+etable(model1_time, model_seasonal_time)</code></pre>
+<pre><code>##                          model1_time  model_seasonal_time
+## Dependent Var.:           mean_index           mean_index
+##                                                          
+## (Intercept)        9.651*** (0.1970)                     
+## time1             0.2215*** (0.0118)   0.0863*** (0.0103)
+## hi_low4             0.0104. (0.0060)     0.0102* (0.0048)
+## month           -0.0006*** (1.21e-5) -0.0005*** (1.01e-5)
+## time1 x hi_low4    -0.0311* (0.0136)   -0.0308** (0.0119)
+## Fixed-Effects:  -------------------- --------------------
+## m_o_y                             No                  Yes
+## _______________ ____________________ ____________________
+## S.E. type       Heteroskedasti.-rob. Heteroskedasti.-rob.
+## Observations                  23,378               23,378
+## R2                           0.11524              0.39786
+## Within R2                         --              0.16580
 ## ---
 ## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>I am testing a linear model regressing Mean index on binary variable
-for time (before and after the introduction of the Scorecard) with an
-interaction term for high and low earning schools to see if the effect
-of the Scorecard on Index was different for these two groups.</p>
+<p>I am testing a linear model regressing Mean index grouped by school
+by month on binary variable for time (before and after the introduction
+of the Scorecard) with an interaction term for high and low earning
+schools over time (month variable) to see if the effect of the Scorecard
+on Index was different for these two groups. We’ll be particullary
+interested in the coefficient on the interaction term.</p>
 <p>After the introduction of the scorecard interest to high earning
-schools dropped by 3.2% more than for low earning schools and this
+schools dropped by 3.1% more than for low earning schools and this
 difference is statistically significant at a 95% level. For both high
 and low earning colleges the introduction of a Scorecard lead to reduced
 interest and this effect was bigger for high earning schools.</p>
