@@ -1,5 +1,5 @@
 ---
-title: "DEA_data_cleanup"
+title: "Data exploration assignment"
 author: "V. Komarova"
 date: "2022-08-01"
 output: html_document
@@ -7,7 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-## knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file()) HOW TO SET UP A WD?
+## knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
 
 
